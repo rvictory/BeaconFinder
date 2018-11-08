@@ -31,4 +31,15 @@ class TestMockChannelManager < MiniTest::Test
     assert_nil(record, "Didn't get an empty line when should have")
   end
 
+  def test_can_read_sequentially
+    @bro_file.open!
+    next_record = @bro_file.next_record
+    assert_equal("1460742445.389561", next_record[0].data, "Didn't extract ts properly")
+    next_record = @bro_file.next_record
+    assert_equal("1460742499.633776", next_record[0].data, "Didn't extract ts properly")
+    1000.times {@bro_file.next_record}
+    next_record = @bro_file.next_record
+    assert_nil(next_record, "Didn't return nil when no more lines were left")
+  end
+
 end
