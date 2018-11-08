@@ -18,7 +18,7 @@ class BroRecord
   # @return [String] The value of that field or nil if it doesn't exist
   def [](value)
     if value.is_a?(Integer)
-      field = fields[value]
+      field = @fields[value]
       field.nil? ? nil : field.data
     else
       field = @fields.select {|x| x.name == value.to_s}
