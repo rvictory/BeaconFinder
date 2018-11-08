@@ -14,6 +14,7 @@ class TestMockChannelManager < MiniTest::Test
     @bro_file = BroFile.new(@path)
   end
 
+  # @todo Test the field extraction
   def test_can_extract_fields
     assert_equal("\\x09", @bro_file.separator, "Didn't extract separator correctly")
     assert_equal(",", @bro_file.set_separator, "Didn't extract set_separator correctly")
@@ -40,6 +41,11 @@ class TestMockChannelManager < MiniTest::Test
     1000.times {@bro_file.next_record}
     next_record = @bro_file.next_record
     assert_nil(next_record, "Didn't return nil when no more lines were left")
+  end
+
+  def test_grouped_ts_on_field_name
+    grouped_data = @bro_file.group_ts_by('host')
+    puts grouped_data.inspect
   end
 
 end

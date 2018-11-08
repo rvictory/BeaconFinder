@@ -2,6 +2,7 @@ require_relative 'bro_field'
 require_relative 'bro_record'
 
 # Represents a Bro log file and provides various methods to work with it
+# @todo Handle #close declaration at end of file
 class BroFile
 
   # The number of lines at the top of a bro file that are comments
@@ -57,6 +58,7 @@ class BroFile
     line_number += NUMBER_OF_COMMENT_LINES
     line = nil
     line_number.times{ line = file.gets }
+    file.close
     if line
       BroRecord.new(@fields, line)
     else
@@ -69,7 +71,19 @@ class BroFile
   # @return [Hash] The grouped data, with keys being the value of the group by key and the values being an
   #   array of timestamp values
   def group_ts_by(field_name)
-
+    grouped_data = {}
+    @file = File.open(@path, 'r')
+    # Skip the comments
+    NUMBER_OF_COMMENT_LINES.times {@file.gets}
+    line = @file.gets
+    until line.nil?
+      record = BroRecord.new(@fields, line)
+      grouped_data[record[field_name]] ||= []
+      grouped_data[record[field_name]].push(record['ts'])
+      line = @file.gets
+    end
+    @file.close
+    grouped_data
   end
 
   # Opens a file for sequential access to the records in the file
